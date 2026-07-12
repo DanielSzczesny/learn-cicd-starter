@@ -1,0 +1,30 @@
+package auth
+
+import  (
+	"testing"
+	"net/http"
+	"errors"
+)
+
+func TestGetAPIKey(t *testing.T) {
+	headers := http.Header{}
+	headers.Set("Authorization", "ApiKey my-secret-key1")
+
+	got, err := GetAPIKey(headers)
+
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+	if got != "my-secret-key" {
+		t.Fatalf("expected API key: %q, got: %q", "my-secret-key", got)
+	}
+}
+
+func TestGetAPIKeyError(t *testing.T) {
+	headers := http.Header{}
+
+	_, err := GetAPIKey(headers)
+	if !errors.Is(err, ErrNoAuthHeaderIncluded) {
+		t.Fatalf("expected: ErrNoAuthHeadersIncluded, got: %v", err)
+	}
+}
